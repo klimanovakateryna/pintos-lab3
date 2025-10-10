@@ -17,6 +17,8 @@
 #error TIMER_FREQ <= 1000 recommended
 #endif
  
+// List of sleeping threads
+struct list sleeping_list;
 
 /* Number of timer ticks since OS booted. */
 static int64_t ticks;
@@ -95,8 +97,12 @@ timer_sleep (int64_t ticks)
   int64_t start = timer_ticks ();
   
   ASSERT (intr_get_level () == INTR_ON);
-  while (timer_elapsed (start) < ticks) 
-    thread_yield ();
+  // while (timer_elapsed (start) < ticks) 
+  //   thread_yield ();
+
+  //list of sleeping threads 
+
+  //make a curr thread sleep for a 
 }
 
 /* Sleeps for approximately MS milliseconds.  Interrupts must be
