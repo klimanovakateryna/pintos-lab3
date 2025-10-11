@@ -138,10 +138,13 @@ timer_wake_up(void){
   int64_t current = timer_ticks();
 
   // take the node from the front, if its wakeuptime less then current, then remove from the list and wake it up
-  for (e = list_begin (&sleeping_list); e != list_end (&sleeping_list); e = list_next (e)) {
-    struct thread *front_thread = list_entry(e, struct thread, elem);
+  while(!list_empty(&sleeping_list)){
+    struct list_elem *front_node = list_front(&sleeping_list);
+    struct thread *front_thread = list_entry(front_node, struct thread, elem);
     if (front_thread -> wake_up_time <= current){
       list_remove(e);
+    } else {
+      break;
     }
   }
 }
