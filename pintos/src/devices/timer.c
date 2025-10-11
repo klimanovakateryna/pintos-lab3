@@ -116,18 +116,18 @@ timer_sleep (int64_t ticks)
 
   //disable interrupts so that we can safely modify sleeping_threads list
   enum intr_level old_level = intr_disable ();
-  
-  // put thread to sleep
-  thread_block();
+
+  // find wake-up time
+  t->wake_up_time = timer_ticks() + ticks;
 
   // put it into the sleeping list
   list_insert_ordered(&sleeping_list, &t->elem, timer_less, NULL);
 
-  // find wake-up time
-  int wake_up_time = timer_ticks() + ticks;
-  // at wake-up time, wake up the thread 
-  thread_ublock();
-  //make a curr thread sleep for a 
+  // put thread to sleep
+  thread_block();
+
+  intr_set_level(old_level);
+
 }
 
 /* Sleeps for approximately MS milliseconds.  Interrupts must be
