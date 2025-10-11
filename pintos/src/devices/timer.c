@@ -100,8 +100,14 @@ timer_sleep (int64_t ticks)
   // while (timer_elapsed (start) < ticks) 
   //   thread_yield ();
 
-  //list of sleeping threads 
+  struct thread *t;
+  *t = thread_current();
 
+  //disable interrupts so that we can safely modify sleeping_threads list
+
+  //list of sleeping threads 
+  list_init(sleeping_list);
+  
   //make a curr thread sleep for a 
 }
 
