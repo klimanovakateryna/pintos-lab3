@@ -644,7 +644,6 @@ int test_list() {
   printf("%s\n", min_ll_node->word);
 
   // TODO: return malloc'd memory.
-  free(s);
   free(min_ll_node);
   return (0);
 }

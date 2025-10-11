@@ -89,6 +89,15 @@ timer_elapsed (int64_t then)
   return timer_ticks () - then;
 }
 
+// less function for list_insert_ordered
+bool timer_less(const struct list_elem *a, const struct list_elem *b, void *aux){
+  struct thread *thread1 = list_entry(a, struct thread, elem);
+  struct thread *thread2 = list_entry(b, struct thread, elem);
+
+  if (thread1 -> wake_up_time < thread2 -> wake_up_time){
+    return true;
+  } else return false;
+}
 //reimplement to avoid busy waiting 
 /* Sleeps for approximately TICKS timer ticks.  Interrupts must
    be turned on. */
@@ -112,11 +121,12 @@ timer_sleep (int64_t ticks)
   thread_block();
 
   // put it into the sleeping list
+  list_insert_ordered(&sleeping_list, &t->elem, timer_less, NULL);
+
   // find wake-up time
   int wake_up_time = timer_ticks() + ticks;
   // at wake-up time, wake up the thread 
-  
-
+  thread_ublock();
   //make a curr thread sleep for a 
 }
 
