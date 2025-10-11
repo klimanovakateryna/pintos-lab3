@@ -98,6 +98,7 @@ bool timer_less(const struct list_elem *a, const struct list_elem *b, void *aux)
     return true;
   } else return false;
 }
+
 //reimplement to avoid busy waiting 
 /* Sleeps for approximately TICKS timer ticks.  Interrupts must
    be turned on. */
@@ -128,6 +129,21 @@ timer_sleep (int64_t ticks)
 
   intr_set_level(old_level);
 
+}
+
+void
+timer_wake_up(void){
+
+  // get the current time
+  int64_t current = timer_ticks();
+
+  // take the node from the front, if its wakeuptime less then current, then remove from the list and wake it up
+  for (e = list_begin (&sleeping_list); e != list_end (&sleeping_list); e = list_next (e)) {
+    struct thread *front_thread = list_entry(e, struct thread, elem);
+    if (front_thread -> wake_up_time <= current){
+      list_remove(e);
+    }
+  }
 }
 
 /* Sleeps for approximately MS milliseconds.  Interrupts must be
