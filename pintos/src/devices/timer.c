@@ -23,6 +23,7 @@ struct list sleeping_list;
 /* Number of timer ticks since OS booted. */
 static int64_t ticks;
 
+
 /* Number of loops per timer tick.
    Initialized by timer_calibrate(). */
 static unsigned loops_per_tick;
@@ -40,6 +41,7 @@ timer_init (void)
 {
   pit_configure_channel (0, 2, TIMER_FREQ);
   intr_register_ext (0x20, timer_interrupt, "8254 Timer");
+  list_init(&sleeping_list);
 }
 
 /* Calibrates loops_per_tick, used to implement brief delays. */
@@ -101,13 +103,20 @@ timer_sleep (int64_t ticks)
   //   thread_yield ();
 
   struct thread *t;
-  *t = thread_current();
+  t = thread_current();
 
   //disable interrupts so that we can safely modify sleeping_threads list
-
-  //list of sleeping threads 
-  list_init(sleeping_list);
+  enum intr_level old_level = intr_disable ();
   
+  // put thread to sleep
+  thread_block();
+
+  // put it into the sleeping list
+  // find wake-up time
+  int wake_up_time = timer_ticks() + ticks;
+  // at wake-up time, wake up the thread 
+  
+
   //make a curr thread sleep for a 
 }
 
