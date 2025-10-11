@@ -142,7 +142,7 @@ timer_wake_up(void){
     struct list_elem *front_node = list_front(&sleeping_list);
     struct thread *front_thread = list_entry(front_node, struct thread, elem);
     if (front_thread -> wake_up_time <= current){
-      list_remove(e);
+      list_remove(front_node);
     } else {
       break;
     }
