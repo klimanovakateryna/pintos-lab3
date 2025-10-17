@@ -99,7 +99,6 @@ bool timer_less(const struct list_elem *a, const struct list_elem *b, void *aux)
   } else return false;
 }
 
-//reimplement to avoid busy waiting 
 /* Sleeps for approximately TICKS timer ticks.  Interrupts must
    be turned on. */
 void
@@ -115,35 +114,38 @@ timer_sleep (int64_t ticks)
   struct thread *t;
   t = thread_current();
 
-  //disable interrupts so that we can safely modify sleeping_threads list
-  enum intr_level old_level = intr_disable ();
+  enum intr_level old_level = intr_disable (); //disable interrupts so that we can safely modify sleeping_threads list
 
-  // find wake-up time
-  t->wake_up_time = timer_ticks() + ticks;
+  t->wake_up_time = timer_ticks() + ticks; // find wake-up time
 
-  // put it into the sleeping list
-  list_insert_ordered(&sleeping_list, &t->elem, timer_less, NULL);
+  list_insert_ordered(&sleeping_list, &t->elem, timer_less, NULL);  // put the thread into the sleeping list
 
-  // put thread to sleep
-  thread_block();
+  thread_block();  // put thread to sleep
 
   intr_set_level(old_level);
 
 }
 
+/*
+  Wakes up the threads sleep time of which is out.
+  Called in timer_interrupt() at each timer tick.
+ */
 void
 timer_wake_up(void){
 
-  // get the current time
-  int64_t current = timer_ticks();
+  int64_t current = timer_ticks();   // get the current time count
 
-  // take the node from the front, if its wakeuptime less then current, then remove from the list and wake it up
+  
   while(!list_empty(&sleeping_list)){
+    
+    // Take the node form the front
     struct list_elem *front_node = list_front(&sleeping_list);
     struct thread *front_thread = list_entry(front_node, struct thread, elem);
+    
+    // If its wakeuptime less then current, then remove from the list and wake it up
     if (front_thread -> wake_up_time <= current){
       list_remove(front_node);
-      thread_unblock(front_thread);
+      thread_unblock(front_thread);  
     } else {
       break;
     }
